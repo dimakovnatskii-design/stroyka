@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>СтройАренда — аренда оборудования в Уфе</title>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+<style>
+  :root{
+    --bg:#ffffff; --bg-soft:#f7f8fa; --text:#0b1220; --muted:#6b7280;
+    --line:#e5e7eb; --hero:#06080f; --accent:#111827; --amber:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+  img{max-width:100%;display:block}
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit;text-decoration:none}
+  .container{width:min(1140px,calc(100% - 32px));margin:0 auto}
+
+  /* HEADER */
+  .header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 0}
+  .brand{display:flex;align-items:center;gap:12px;cursor:pointer}
+  .brand img{width:44px;height:44px;object-fit:contain;border-radius:8px;border:1px solid var(--line);padding:4px;background:#fff}
+  .brand-title{font-size:15px;font-weight:700;letter-spacing:-0.01em}
+  .brand-subtitle{font-size:11px;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-top:1px}
+  .header-right{display:flex;align-items:center;gap:20px}
+  .header-phone{font-weight:600;font-size:14px;white-space:nowrap}
+  .header-phone:hover{color:var(--muted)}
+  .cart-btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;
+    border:0;border-radius:8px;padding:9px 14px;font-weight:600;font-size:13px}
+  .cart-btn:hover{background:#000}
+  .cart-count{background:rgba(255,255,255,.2);border-radius:4px;padding:1px 6px;font-size:12px;font-weight:700}
+
+  /* HERO */
+  .hero{position:relative;background:var(--hero);overflow:hidden;color:#fff}
+  .hero-bg{position:absolute;inset:0}
+  .hero-overlay{position:absolute;inset:0;pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(6,8,15,.94) 0%, rgba(6,8,15,.55) 55%, rgba(6,8,15,.2) 100%),
+      linear-gradient(180deg, rgba(6,8,15,.3) 0%, transparent 40%, rgba(6,8,15,.55) 100%);
+  }
+  .hero-content{position:relative;padding:88px 0 96px;max-width:680px}
+  .hero-eyebrow{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+    color:rgba(255,255,255,.6);margin-bottom:16px}
+  .hero h1{margin:0 0 16px;font-weight:500;letter-spacing:-0.02em;
+    font-size:clamp(28px,4.2vw,48px);line-height:1.1}
+  .hero p{margin:0 0 26px;color:rgba(255,255,255,.75);font-size:16px;max-width:560px}
+  .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;
+    border:0;border-radius:8px;padding:12px 20px;
+    font-weight:600;font-size:14px;transition:background .15s,border-color .15s,color .15s}
+  .btn-primary{background:var(--amber);color:#0b1220}
+  .btn-primary:hover{background:#fbbf24}
+  .btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .btn-outline:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.05)}
+  .btn-dark{background:var(--accent);color:#fff}
+  .btn-dark:hover{background:#000}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--text)}
+  .btn-ghost:hover{background:var(--bg-soft)}
+  .btn-sm{padding:8px 12px;font-size:13px;border-radius:6px}
+
+  /* MARQUEE (ScrollVelocity) */
+  .marquee-wrap{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:48px 0;overflow:hidden}
+  .marquee{display:flex;flex-direction:column;gap:6px}
+  .sv-row{overflow:hidden;white-space:nowrap}
+  .sv-track{display:inline-flex;will-change:transform;transform-origin:center}
+  .sv-item{font-size:clamp(40px,7vw,80px);font-weight:800;letter-spacing:-0.03em;
+    line-height:1.02;padding:0 20px;flex:0 0 auto;color:#0b1220}
+  .sv-row.outline .sv-item{-webkit-text-fill-color:transparent;
+    -webkit-text-stroke:max(1px,0.028em) #0b1220;color:transparent}
+
+  /* SECTION */
+  .section{padding:56px 0}
+  .section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;
+    margin-bottom:24px;flex-wrap:wrap}
+  .section-title{margin:0;font-size:22px;font-weight:600;letter-spacing:-0.01em}
+  .section-desc{margin:6px 0 0;color:var(--muted);font-size:14px;max-width:640px}
+
+  /* TOOLBAR */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+  .search{flex:1 1 240px;position:relative}
+  .search input{width:100%;padding:10px 14px 10px 38px;border:1px solid var(--line);
+    border-radius:8px;font-size:14px;background:#fff}
+  .search input:focus{outline:none;border-color:var(--text)}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .filters{display:flex;gap:6px;flex-wrap:wrap}
+  .filter{background:#fff;border:1px solid var(--line);border-radius:999px;
+    padding:8px 14px;font-size:13px;font-weight:500;color:var(--muted)}
+  .filter:hover{border-color:var(--text);color:var(--text)}
+  .filter.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;
+    overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s}
+  .card:hover{border-color:#d1d5db}
+  .card-image{height:240px;background:var(--bg-soft);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
+  .card-image img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+  .card-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .card-body h3{margin:0;font-size:15px;font-weight:600;line-height:1.35;cursor:pointer}
+  .card-body p{margin:0;color:var(--muted);font-size:13px;flex:1;line-height:1.5}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+  .price{font-weight:700;font-size:15px}
+  .price small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:1px}
+  .empty{grid-column:1/-1;text-align:center;padding:60px 0;color:var(--muted)}
+
+  /* CALCULATOR */
+  .calc-wrap{background:var(--bg-soft);border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);padding:56px 0}
+  .calc-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px}
+  .calc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+  .calc-field{display:flex;flex-direction:column;gap:6px}
+  .calc-field label{font-size:12px;font-weight:600;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.04em}
+  .calc-field select,.calc-field input{padding:10px 12px;border:1px solid var(--line);
+    border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
+  .calc-field select:focus,.calc-field input:focus{outline:none;border-color:var(--text)}
+  .calc-result{margin-top:18px;padding:18px;border-radius:10px;
+    background:var(--bg-soft);border:1px solid var(--line)}
+  .calc-row{display:flex;justify-content:space-between;gap:12px;
+    padding:5px 0;font-size:14px;color:#374151}
+  .calc-row.discount{color:#047857}
+  .calc-row.total{font-size:18px;font-weight:700;color:var(--text);
+    border-top:1px solid var(--line);margin-top:8px;padding-top:12px}
+  .calc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+  /* REVIEWS */
+  .reviews{background:#fff}
+  .reviews-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px}
+  .review{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;
+    display:flex;flex-direction:column;gap:12px}
+  .review-head{display:flex;align-items:center;gap:12px}
+  .review-avatar{width:40px;height:40px;border-radius:50%;background:var(--bg-soft);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;
+    color:var(--text);flex:0 0 auto;border:1px solid var(--line)}
+  .review-name{font-weight:600;font-size:14px;margin:0}
+  .review-role{font-size:12px;color:var(--muted);margin:2px 0 0}
+  .review-stars{display:flex;gap:2px;color:var(--amber)}
+  .review-text{margin:0;color:#374151;font-size:14px;line-height:1.6}
+  .reviews-summary{margin-top:24px;display:flex;align-items:center;gap:16px;
+    padding:16px 20px;border:1px solid var(--line);border-radius:12px;background:var(--bg-soft)}
+  .reviews-score{font-size:32px;font-weight:700;letter-spacing:-0.02em;line-height:1}
+  .reviews-meta{font-size:13px;color:var(--muted)}
+
+  /* CONTACTS */
+  .contacts-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:32px;margin-top:24px}
+  .contact-list{display:flex;flex-direction:column}
+  .contact-row{display:flex;align-items:center;gap:12px;padding:14px 0;
+    border-bottom:1px solid var(--line);font-weight:500;font-size:14px}
+  .contact-row:hover{color:var(--muted)}
+  .contact-row svg{color:var(--muted);flex:0 0 auto}
+  .contact-row:last-child{border-bottom:0}
+  .address-box{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--bg-soft)}
+  .address-box h3{margin:0 0 4px;font-size:12px;font-weight:600;text-transform:uppercase;
+    letter-spacing:0.06em;color:var(--muted)}
+  .address-box p{margin:0 0 14px;font-size:15px;font-weight:500}
+
+  /* FOOTER */
+  .footer{background:#fff;border-top:1px solid var(--line);padding:22px 0;
+    font-size:13px;color:var(--muted)}
+  .footer-inner{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  /* MODAL */
+  .overlay{position:fixed;inset:0;background:rgba(6,8,15,.5);display:none;
+    align-items:center;justify-content:center;padding:16px;z-index:100}
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:12px;max-width:600px;width:100%;max-height:92vh;
+    overflow:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+  .modal-close{position:absolute;top:12px;right:12px;background:var(--bg-soft);
+    border:0;width:34px;height:34px;border-radius:8px;font-size:16px;
+    font-weight:600;color:var(--muted);z-index:2}
+  .modal-close:hover{background:var(--line);color:var(--text)}
+  .modal-body{padding:24px}
+  .modal-body h2{margin:0 0 14px;font-size:20px;font-weight:600;letter-spacing:-0.01em}
+  .m-img{background:var(--bg-soft);border-radius:10px;height:280px;overflow:hidden;
+    margin-bottom:18px;display:block}
+  .m-img img{width:100%;height:100%;object-fit:cover;display:block}
+  .modal-body p{color:var(--muted);margin:0 0 14px;font-size:14px;line-height:1.6}
+  .price-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .price-big{font-size:20px;font-weight:700}
+
+  /* CART */
+  .cart-panel{display:flex;flex-direction:column;max-height:92vh}
+  .cart-head{padding:18px 22px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;
+    font-weight:600;font-size:16px}
+  .cart-items{padding:8px 22px;overflow:auto;flex:1}
+  .cart-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center}
+  .cart-item:last-child{border-bottom:0}
+  .cart-item img{width:56px;height:56px;object-fit:cover;background:var(--bg-soft);
+    border-radius:8px;flex:0 0 auto}
+  .cart-item .ci-info{flex:1;min-width:0}
+  .cart-item .ci-info b{display:block;font-size:14px;margin-bottom:2px;font-weight:600}
+  .cart-item .ci-info span{font-size:12px;color:var(--muted)}
+  .qty{display:inline-flex;align-items:center;border:1px solid var(--line);
+    border-radius:6px;overflow:hidden}
+  .qty button{background:#fff;border:0;width:26px;height:26px;font-size:14px;
+    font-weight:700;color:var(--muted)}
+  .qty button:hover{background:var(--bg-soft);color:var(--text)}
+  .qty span{min-width:26px;text-align:center;font-size:13px;font-weight:600}
+  .remove{background:none;border:0;color:var(--muted);font-size:12px;padding:4px}
+  .remove:hover{color:#dc2626}
+  .cart-foot{padding:16px 22px;border-top:1px solid var(--line);background:var(--bg-soft)}
+  .cart-total{display:flex;justify-content:space-between;font-size:15px;
+    font-weight:700;margin-bottom:12px}
+  .cart-empty{text-align:center;color:var(--muted);padding:40px 0;font-size:14px}
+
+  /* FORM */
+  .form{display:flex;flex-direction:column;gap:12px}
+  .form label{font-size:12px;font-weight:600;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.04em}
+  .form input,.form textarea{width:100%;padding:10px 12px;border:1px solid var(--line);
+    border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
+  .form input:focus,.form textarea:focus{outline:none;border-color:var(--text)}
+  .form textarea{resize:vertical;min-height:64px}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120%);
+    background:var(--text);color:#fff;padding:12px 18px;border-radius:8px;
+    font-weight:500;font-size:14px;z-index:200;transition:transform .25s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);max-width:calc(100% - 32px)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast.ok{background:#047857}
+
+  /* RESPONSIVE */
+  @media(max-width:980px){
+    .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .calc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .contacts-grid{grid-template-columns:1fr}
+    .reviews-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:640px){
+    .grid{grid-template-columns:1fr}
+    .card-image{height:200px}
+    .header-phone{display:none}
+    .calc-grid{grid-template-columns:1fr}
+    .hero-content{padding:60px 0 70px}
+    .hero-overlay{background:linear-gradient(180deg, rgba(6,8,15,.85) 0%, rgba(6,8,15,.65) 100%)}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a class="brand" href="#">
+      <img src="https://i.postimg.cc/Hk7f705q/img.jpg" alt="СтройАренда" />
+      <div>
+        <div class="brand-title">СтройАренда</div>
+        <div class="brand-subtitle">Уфа</div>
+      </div>
+    </a>
+    <div class="header-right">
+      <a class="header-phone" href="tel:+79638959810">+7 (963) 895-98-10</a>
+      <button class="cart-btn" id="openCart">
+        Корзина <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <div class="hero-eyebrow">СтройАренда · Уфа</div>
+    <h1>Аренда строительного оборудования без залога и скрытых платежей</h1>
+    <p>Виброплиты, генераторы, отбойные молотки, леса, туры и насосы.
+       Привезём в день заказа по Уфе, поможем подобрать мощность под вашу задачу.</p>
+    <div class="hero-actions">
+      <a href="#calc" class="btn btn-primary">Рассчитать стоимость</a>
+      <a href="tel:+79638959810" class="btn btn-outline">Позвонить</a>
+    </div>
+  </div>
+</section>
+
+<!-- ScrollVelocity -->
+<section class="marquee-wrap">
+  <div class="marquee" id="marquee"></div>
+</section>
+
+<section class="calc-wrap" id="calc">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Калькулятор аренды</h2>
+        <p class="section-desc">Прозрачные цены: скидка 10% от 4 суток и 15% от 8 суток. Доставка по Уфе — 1 500 ₽, самовывоз бесплатно.</p>
+      </div>
+    </div>
+    <div class="calc-card">
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>Оборудование</label>
+          <select id="calcProduct"></select>
+        </div>
+        <div class="calc-field">
+          <label>Количество</label>
+          <input id="calcQty" type="number" min="1" step="1" value="1" />
+        </div>
+        <div class="calc-field">
+          <label>Срок, суток</label>
+          <input id="calcDays" type="number" min="1" step="1" value="1" />
+        </div>
+        <div class="calc-field">
+          <label>Доставка</label>
+          <select id="calcDelivery">
+            <option value="0">Самовывоз — 0 ₽</option>
+            <option value="1500">По Уфе — 1 500 ₽</option>
+          </select>
+        </div>
+      </div>
+      <div class="calc-result" id="calcResult"></div>
+      <div class="calc-actions">
+        <button class="btn btn-dark btn-sm" id="calcWhatsApp">Отправить в WhatsApp</button>
+        <a class="btn btn-ghost btn-sm" href="https://t.me/stroika_arenda_bot" target="_blank" rel="noopener">Заявка в Telegram</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="catalog">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Каталог</h2>
+        <p class="section-desc">Вся техника проверена перед выдачей, проходит сервис после каждой аренды.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+        </svg>
+        <input id="searchInput" type="text" placeholder="Поиск по каталогу" />
+      </div>
+      <div class="filters" id="filters"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="section reviews" id="reviews">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Отзывы клиентов</h2>
+        <p class="section-desc">Нам доверяют прорабы, бригадиры и частные застройщики. Более 800 выполненных заказов в Уфе.</p>
+      </div>
+    </div>
+    <div class="reviews-grid" id="reviewsGrid"></div>
+    <div class="reviews-summary">
+      <div class="reviews-score">4.9</div>
+      <div>
+        <div class="review-stars" id="summaryStars"></div>
+        <div class="reviews-meta">Средняя оценка на основе 127 отзывов</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contacts">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Контакты</h2>
+        <p class="section-desc">Приезжайте на склад или напишите — ответим в течение 5 минут в рабочее время.</p>
+      </div>
+    </div>
+    <div class="contacts-grid">
+      <div class="contact-list">
+        <a class="contact-row" href="tel:+79638959810">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          +7 (963) 895-98-10
+        </a>
+        <a class="contact-row" href="https://t.me/stroika_arenda_bot" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          Telegram-бот
+        </a>
+        <a class="contact-row" href="https://wa.me/79046669413?text=Обращение+из+Яндекс+Карт%0AЗдравствуйте!+Меня+заинтересовало+ваше+предложение" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp
+        </a>
+        <a class="contact-row" href="https://vk.ru/stroika_arenda" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13.16 18.99c.61 0 .86-.4.85-.91-.03-1.92.71-2.95 2.06-1.6 1.49 1.49 1.8 2.52 3.6 2.52h3.2c.81 0 1.13-.26 1.13-.67 0-.86-1.42-2.39-2.63-3.5-1.69-1.57-1.77-1.6-.31-3.49 1.8-2.34 4.16-5.34 2.07-5.34h-3.98c-.77 0-.83.44-1.1 1.08-1 2.35-2.89 5.39-3.6 4.92-.75-.49-.41-2.41-.35-5.26.01-.75.01-1.27-1.14-1.54-.63-.14-1.24-.2-1.81-.2-2.27 0-3.84.95-2.95 1.12 1.57.29 1.42 3.69 1.05 5.16-.64 2.56-3.04-2.02-4.03-4.3-.24-.55-.32-.98-1.18-.98H.79c-.49 0-.79.16-.79.52 0 .6 2.96 6.72 5.79 9.77 2.76 2.97 5.57 2.39 7.08 2.39z"/></svg>
+          ВКонтакте
+        </a>
+        <a class="contact-row" href="https://max.ru/u/f9LHodD0cOJwkIXANO7qPnpnqa7LxPlStstUQoCj7BgxMvqN8lp7tXwCzUI" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.5 14.5h-1.75V7.5h1.75v3.5l3-3.5h2.25l-3.5 4 3.75 5h-2.25l-2.75-3.75-.75.75v3z"/></svg>
+          MAX
+        </a>
+      </div>
+      <div class="address-box">
+        <h3>Адрес склада</h3>
+        <p>Рязанская ул., 1А, Уфа</p>
+        <a class="btn btn-dark btn-sm" href="https://yandex.ru/maps/?text=Уфа,%20Рязанская%20улица,%201А" target="_blank" rel="noopener">Построить маршрут</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>© СтройАренда · Уфа</div>
+    <div>Рязанская ул., 1А · +7 (963) 895-98-10</div>
+  </div>
+</footer>
+
+<!-- Модалки -->
+<div class="overlay" id="productOverlay">
+  <div class="modal">
+    <button class="modal-close" data-close="productOverlay">✕</button>
+    <div class="modal-body" id="productBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="cartOverlay">
+  <div class="modal cart-panel">
+    <div class="cart-head">
+      <span>Корзина</span>
+      <button class="modal-close" style="position:static" data-close="cartOverlay">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-foot" id="cartFoot"></div>
+  </div>
+</div>
+
+<div class="overlay" id="checkoutOverlay">
+  <div class="modal">
+    <button class="modal-close" data-close="checkoutOverlay">✕</button>
+    <div class="modal-body">
+      <h2>Оформление заявки</h2>
+      <form class="form" id="checkoutForm">
+        <div><label>Имя *</label><input required name="name" type="text" placeholder="Иван" /></div>
+        <div><label>Телефон *</label><input required name="phone" type="tel" placeholder="+7" /></div>
+        <div><label>Email</label><input name="email" type="email" placeholder="you@mail.ru" /></div>
+        <div><label>Адрес</label><textarea name="address" placeholder="Город, улица, дом"></textarea></div>
+        <div><label>Комментарий</label><textarea name="comment"></textarea></div>
+        <div class="cart-total"><span>Итого</span><span id="checkoutTotal">0 ₽</span></div>
+        <button class="btn btn-dark" type="submit" style="padding:12px">Отправить заявку</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ColorBends (vanilla three.js) -->
+<script type="module">
+import * as THREE from 'three';
+
+const MAX_COLORS = 8;
+const vert = `
+varying vec2 vUv;
+void main() { vUv = uv; gl_Position = vec4(position, 1.0); }
+`;
+const frag = `
+#define MAX_COLORS ${MAX_COLORS}
+uniform vec2 uCanvas; uniform float uTime; uniform float uSpeed;
+uniform vec2 uRot; uniform int uColorCount; uniform vec3 uColors[MAX_COLORS];
+uniform int uTransparent; uniform float uScale; uniform float uFrequency;
+uniform float uWarpStrength; uniform vec2 uPointer; uniform float uMouseInfluence;
+uniform float uParallax; uniform float uNoise; uniform int uIterations;
+uniform float uIntensity; uniform float uBandWidth; varying vec2 vUv;
+void main() {
+  float t = uTime * uSpeed;
+  vec2 p = vUv * 2.0 - 1.0;
+  p += uPointer * uParallax * 0.1;
+  vec2 rp = vec2(p.x*uRot.x - p.y*uRot.y, p.x*uRot.y + p.y*uRot.x);
+  vec2 q = vec2(rp.x*(uCanvas.x/uCanvas.y), rp.y);
+  q /= max(uScale, 0.0001);
+  q /= 0.5 + 0.2*dot(q,q);
+  q += 0.2*cos(t) - 7.56;
+  q += (uPointer - rp) * uMouseInfluence * 0.2;
+  for (int j = 0; j < 5; j++) {
+    if (j >= uIterations - 1) break;
+    vec2 rr = sin(1.5*(q.yx*uFrequency) + 2.0*cos(q*uFrequency));
+    q += (rr - q) * 0.15;
+  }
+  vec3 col = vec3(0.0); float a = 1.0;
+  if (uColorCount > 0) {
+    vec2 s = q; vec3 sumCol = vec3(0.0); float cover = 0.0;
+    for (int i = 0; i < MAX_COLORS; ++i) {
+      if (i >= uColorCount) break;
+      s -= 0.01;
+      vec2 r = sin(1.5*(s.yx*uFrequency) + 2.0*cos(s*uFrequency));
+      float m0 = length(r + sin(5.0*r.y*uFrequency - 3.0*t + float(i))/4.0);
+      float kBelow = clamp(uWarpStrength, 0.0, 1.0);
+      float kMix = pow(kBelow, 0.3);
+      float gain = 1.0 + max(uWarpStrength - 1.0, 0.0);
+      vec2 warped = s + (r - s)*kBelow*gain;
+      float m1 = length(warped + sin(5.0*warped.y*uFrequency - 3.0*t + float(i))/4.0);
+      float m = mix(m0, m1, kMix);
+      float w = 1.0 - exp(-uBandWidth/exp(uBandWidth*m));
+      sumCol += uColors[i] * w; cover = max(cover, w);
+    }
+    col = clamp(sumCol, 0.0, 1.0);
+    a = uTransparent > 0 ? cover : 1.0;
+  } else {
+    vec2 s = q;
+    for (int k = 0; k < 3; ++k) {
+      s -= 0.01;
+      vec2 r = sin(1.5*(s.yx*uFrequency) + 2.0*cos(s*uFrequency));
+      float m0 = length(r + sin(5.0*r.y*uFrequency - 3.0*t + float(k))/4.0);
+      float kBelow = clamp(uWarpStrength, 0.0, 1.0);
+      float kMix = pow(kBelow, 0.3);
+      float gain = 1.0 + max(uWarpStrength - 1.0, 0.0);
+      vec2 warped = s + (r - s)*kBelow*gain;
+      float m1 = length(warped + sin(5.0*warped.y*uFrequency - 3.0*t + float(k))/4.0);
+      float m = mix(m0, m1, kMix);
+      col[k] = 1.0 - exp(-uBandWidth/exp(uBandWidth*m));
+    }
+    a = uTransparent > 0 ? max(max(col.r, col.g), col.b) : 1.0;
+  }
+  col *= uIntensity;
+  if (uNoise > 0.0001) {
+    float n = fract(sin(dot(gl_FragCoord.xy + vec2(uTime), vec2(12.9898, 78.233))) * 43758.5453);
+    col += (n - 0.5) * uNoise; col = clamp(col, 0.0, 1.0);
+  }
+  vec3 rgb = (uTransparent > 0) ? col * a : col;
+  gl_FragColor = vec4(rgb, a);
+}
+`;
+
+function mountColorBends(container, props = {}) {
+  const {
+    rotation = 90, autoRotate = 0, speed = 0.2, colors = [],
+    transparent = true, scale = 1, frequency = 1, warpStrength = 1,
+    mouseInfluence = 1, parallax = 0.5, noise = 0.15,
+    iterations = 1, intensity = 1.5, bandWidth = 6,
+  } = props;
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const geometry = new THREE.PlaneGeometry(2, 2);
+  const uColorsArray = Array.from({ length: MAX_COLORS }, () => new THREE.Vector3(0, 0, 0));
+
+  const material = new THREE.ShaderMaterial({
+    vertexShader: vert, fragmentShader: frag,
+    uniforms: {
+      uCanvas: { value: new THREE.Vector2(1, 1) }, uTime: { value: 0 },
+      uSpeed: { value: speed }, uRot: { value: new THREE.Vector2(1, 0) },
+      uColorCount: { value: 0 }, uColors: { value: uColorsArray },
+      uTransparent: { value: transparent ? 1 : 0 }, uScale: { value: scale },
+      uFrequency: { value: frequency }, uWarpStrength: { value: warpStrength },
+      uPointer: { value: new THREE.Vector2(0, 0) }, uMouseInfluence: { value: mouseInfluence },
+      uParallax: { value: parallax }, uNoise: { value: noise },
+      uIterations: { value: iterations }, uIntensity: { value: intensity },
+      uBandWidth: { value: bandWidth },
+    },
+    premultipliedAlpha: true, transparent: true,
+  });
+
+  const toVec3 = hex => {
+    const h = hex.replace('#', '').trim();
+    const v = h.length === 3
+      ? [parseInt(h[0]+h[0],16), parseInt(h[1]+h[1],16), parseInt(h[2]+h[2],16)]
+      : [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+    return new THREE.Vector3(v[0]/255, v[1]/255, v[2]/255);
+  };
+  const arr = (colors || []).filter(Boolean).slice(0, MAX_COLORS).map(toVec3);
+  for (let i = 0; i < MAX_COLORS; i++) if (i < arr.length) material.uniforms.uColors.value[i].copy(arr[i]);
+  material.uniforms.uColorCount.value = arr.length;
+
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance', alpha: true });
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x000000, transparent ? 0 : 1);
+  renderer.domElement.style.width = '100%';
+  renderer.domElement.style.height = '100%';
+  renderer.domElement.style.display = 'block';
+  container.appendChild(renderer.domElement);
+
+  const handleResize = () => {
+    const w = container.clientWidth || 1;
+    const h = container.clientHeight || 1;
+    renderer.setSize(w, h, false);
+    material.uniforms.uCanvas.value.set(w, h);
+  };
+  handleResize();
+  let ro;
+  if ('ResizeObserver' in window) { ro = new ResizeObserver(handleResize); ro.observe(container); }
+  else window.addEventListener('resize', handleResize);
+
+  const pointerTarget = new THREE.Vector2(0, 0);
+  const pointerCurrent = new THREE.Vector2(0, 0);
+  container.addEventListener('pointermove', e => {
+    const rect = container.getBoundingClientRect();
+    pointerTarget.set(
+      ((e.clientX - rect.left) / (rect.width || 1)) * 2 - 1,
+      -(((e.clientY - rect.top) / (rect.height || 1)) * 2 - 1)
+    );
+  });
+
+  const clock = new THREE.Clock();
+  const loop = () => {
+    const dt = clock.getDelta();
+    const elapsed = clock.elapsedTime;
+    material.uniforms.uTime.value = elapsed;
+    const deg = (rotation % 360) + autoRotate * elapsed;
+    const rad = (deg * Math.PI) / 180;
+    material.uniforms.uRot.value.set(Math.cos(rad), Math.sin(rad));
+    pointerCurrent.lerp(pointerTarget, Math.min(1, dt * 8));
+    material.uniforms.uPointer.value.copy(pointerCurrent);
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+
+const heroBg = document.getElementById('heroBg');
+if (heroBg) {
+  try {
+    mountColorBends(heroBg, {
+      colors: ['#3b82f6', '#8b5cf6', '#f59e0b'],
+      rotation: 90, autoRotate: 2, speed: 0.12, scale: 1.25, frequency: 1.15,
+      warpStrength: 1.15, mouseInfluence: 0.4, parallax: 0.4, noise: 0.06,
+      iterations: 2, intensity: 0.9, bandWidth: 4.5, transparent: true,
+    });
+  } catch (e) {
+    heroBg.style.background = 'radial-gradient(circle at 70% 30%, #1e3a8a, #06080f)';
+  }
+}
+</script>
+
+<!-- ScrollVelocity (vanilla) -->
+<script>
+(function initScrollVelocity() {
+  const container = document.getElementById('marquee');
+  if (!container) return;
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const rows = [
+    { text: 'АРЕНДА · УФА · БЕЗ ЗАЛОГА · ДОСТАВКА В ДЕНЬ ЗАКАЗА', direction:  1 },
+    { text: 'ВИБРОПЛИТЫ · ГЕНЕРАТОРЫ · НАСОСЫ · ЛЕСА · ТУРЫ · МОЛОТКИ', direction: -1 },
+  ];
+  const NUM_COPIES = 6;
+  const BASE_SPEED = 70;
+
+  const states = rows.map((data, i) => {
+    const row = document.createElement('div');
+    row.className = 'sv-row' + (i === 1 ? ' outline' : '');
+    const track = document.createElement('div');
+    track.className = 'sv-track';
+    for (let k = 0; k < NUM_COPIES; k++) {
+      const span = document.createElement('span');
+      span.className = 'sv-item';
+      span.textContent = data.text + '  ·  ';
+      track.appendChild(span);
+    }
+    row.appendChild(track);
+    container.appendChild(row);
+    return { track, baseDirection: data.direction, offset: 0, itemWidth: 0 };
+  });
+
+  requestAnimationFrame(() => {
+    states.forEach(s => { s.itemWidth = s.track.children[0].offsetWidth; });
+  });
+
+  if (reduced) {
+    states.forEach(s => {
+      if (s.itemWidth) s.track.style.transform = `translate3d(0,0,0)`;
+    });
+    return;
+  }
+
+  let scrollVel = 0;
+  let lastY = window.scrollY;
+  let smoothVel = 0;
+
+  window.addEventListener('scroll', () => {
+    const now = window.scrollY;
+    scrollVel += (now - lastY) * 5;
+    lastY = now;
+  }, { passive: true });
+
+  let prev = performance.now();
+  let scrollDirection = 1;
+
+  function loop(now) {
+    const dt = Math.min((now - prev) / 1000, 0.05);
+    prev = now;
+
+    smoothVel += (scrollVel - smoothVel) * 0.12;
+    scrollVel *= 0.9;
+
+    if (smoothVel > 2)  scrollDirection = 1;
+    else if (smoothVel < -2) scrollDirection = -1;
+
+    const boost = 1 + Math.min(Math.abs(smoothVel) * 0.15, 6);
+    const skew  = Math.tanh(smoothVel / 15) * 6;
+
+    states.forEach(s => {
+      if (!s.itemWidth) return;
+      const speed = BASE_SPEED * s.baseDirection * scrollDirection * boost;
+      s.offset += speed * dt;
+      s.offset = ((s.offset % s.itemWidth) + s.itemWidth) % s.itemWidth;
+      s.track.style.transform = `translate3d(${-s.offset}px, 0, 0) skewX(${skew}deg)`;
+    });
+
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+
+<!-- Логика магазина -->
+<script>
+const PRODUCTS = [
+  { id:1, title:'Виброплита бензиновая', category:'Виброплиты', price:42900, rent:1200,
+    image:'https://i.postimg.cc/KYSC7KDb/img.jpg',
+    desc:'Уплотнение грунта, песка, щебня и асфальта. Глубина до 35 см, производительность до 1050 м²/ч.' },
+  { id:2, title:'Бензиновый генератор', category:'Генераторы', price:38500, rent:1500,
+    image:'https://i.postimg.cc/LsKGkq34/img.jpg',
+    desc:'Автономное питание для стройплощадки, мастерской и резервного электроснабжения дома.' },
+  { id:3, title:'Отбойный молоток', category:'Инструмент', price:15700, rent:800,
+    image:'https://i.postimg.cc/g0F1ywHL/img.jpg',
+    desc:'Демонтаж бетона, кирпича и асфальта. Питание 220 В, энергия удара 25 Дж.' },
+  { id:4, title:'Строительные леса и туры', category:'Леса и туры', price:27300, rent:600,
+    image:'https://i.postimg.cc/sX388t8B/img.jpg',
+    desc:'Работы на высоте внутри помещений и на фасадах. Быстрая сборка, устойчивая конструкция.' },
+  { id:5, title:'Дренажный насос', category:'Насосы', price:8900, rent:700,
+    image:'https://i.postimg.cc/zvccy3fY/img.jpg',
+    desc:'Откачка воды из подвалов, котлованов и площадок. Пропускает частицы до 35 мм.' },
+];
+
+const REVIEWS = [
+  { name:'Алексей М.', role:'Прораб, ЖК «Северный»', rating:5,
+    text:'Брали виброплиту на 5 дней. Привезли утром, забрали вечером — без доплат и нервов. Техника в отличном состоянии, всё работает как надо.' },
+  { name:'Дмитрий К.', role:'Частный застройщик', rating:5,
+    text:'Генератор работал всю смену без перегрева. Менеджер помог подобрать мощность под инструмент, сэкономил мне деньги. Рекомендую.' },
+  { name:'Ирина С.', role:'Прораб, ремонт квартир', rating:5,
+    text:'Отбойный молоток брали на неделю — дали скидку за срок. Всё чистое, с расходниками. Приятно работать с профессионалами.' },
+  { name:'Сергей В.', role:'Строительная бригада', rating:5,
+    text:'Постоянно берём леса и туры. Всегда в наличии, доставка по Уфе в течение часа. Постоянным клиентам — скидки, это чувствуется.' },
+];
+
+const CATEGORIES = ['Все', ...new Set(PRODUCTS.map(p=>p.category))];
+const fmt = n => n.toLocaleString('ru-RU') + ' ₽';
+const $ = id => document.getElementById(id);
+const starSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+let activeCat = 'Все';
+let searchQuery = '';
+
+/* КАТАЛОГ */
+function renderFilters(){
+  $('filters').innerHTML = CATEGORIES.map(c =>
+    `<button class="filter ${c===activeCat?'active':''}" data-cat="${c}">${c}</button>`
+  ).join('');
+  document.querySelectorAll('.filter').forEach(b=>{
+    b.onclick = () => { activeCat = b.dataset.cat; renderFilters(); renderGrid(); };
+  });
+}
+
+function renderGrid(){
+  const list = PRODUCTS.filter(p =>
+    (activeCat==='Все' || p.category===activeCat) &&
+    (p.title.toLowerCase().includes(searchQuery) || p.desc.toLowerCase().includes(searchQuery))
+  );
+  if(!list.length){
+    $('grid').innerHTML = '<div class="empty">Товары не найдены</div>';
+    return;
+  }
+  $('grid').innerHTML = list.map(p=>`
+    <article class="card">
+      <div class="card-image" onclick="openProduct(${p.id})">
+        <img src="${p.image}" alt="${p.title}" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <h3 onclick="openProduct(${p.id})">${p.title}</h3>
+        <p>${p.desc}</p>
+        <div class="card-foot">
+          <span class="price">${fmt(p.rent)}<small>аренда / сутки</small></span>
+          <button class="btn btn-dark btn-sm" onclick="addToCart(${p.id})">В корзину</button>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+function openProduct(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  $('productBody').innerHTML = `
+    <h2>${p.title}</h2>
+    <div class="m-img"><img src="${p.image}" alt="${p.title}" /></div>
+    <p>${p.desc}</p>
+    <p><b>Аренда:</b> ${fmt(p.rent)} / сутки &nbsp;·&nbsp; <b>Покупка:</b> ${fmt(p.price)}</p>
+    <div class="price-row">
+      <span class="price-big">${fmt(p.rent)} <small style="font-size:12px;color:#6b7280;font-weight:400">/ сутки</small></span>
+      <button class="btn btn-dark" onclick="addToCart(${p.id}); closeModal('productOverlay')">Добавить в корзину</button>
+    </div>
+  `;
+  openModal('productOverlay');
+}
+
+/* ОТЗЫВЫ */
+function renderReviews(){
+  $('reviewsGrid').innerHTML = REVIEWS.map(r => {
+    const initials = r.name.split(' ').map(w => w[0]).join('').slice(0,2);
+    const stars = Array.from({length:r.rating}, ()=>starSvg).join('');
+    return `
+      <article class="review">
+        <div class="review-head">
+          <div class="review-avatar">${initials}</div>
+          <div>
+            <p class="review-name">${r.name}</p>
+            <p class="review-role">${r.role}</p>
+          </div>
+        </div>
+        <div class="review-stars">${stars}</div>
+        <p class="review-text">${r.text}</p>
+      </article>
+    `;
+  }).join('');
+  $('summaryStars').innerHTML = Array.from({length:5}, ()=>starSvg).join('');
+}
+
+/* КОРЗИНА */
+function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); }
+
+function addToCart(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  const item = cart.find(i=>i.id===id);
+  if(item) item.qty++;
+  else cart.push({ id, qty:1 });
+  saveCart(); renderCart(); showToast(`«${p.title}» добавлен в корзину`, true);
+}
+
+function changeQty(id, delta){
+  const item = cart.find(i=>i.id===id);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0) cart = cart.filter(i=>i.id!==id);
+  saveCart(); renderCart();
+}
+
+function removeItem(id){
+  cart = cart.filter(i=>i.id!==id);
+  saveCart(); renderCart();
+}
+
+function cartTotal(){
+  return cart.reduce((sum,i)=>{
+    const p = PRODUCTS.find(x=>x.id===i.id);
+    return sum + (p ? p.price*i.qty : 0);
+  }, 0);
+}
+
+function renderCart(){
+  $('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+  const items = $('cartItems');
+  const foot = $('cartFoot');
+
+  if(!cart.length){
+    items.innerHTML = '<div class="cart-empty">Корзина пуста</div>';
+    foot.innerHTML = '';
+    return;
+  }
+
+  items.innerHTML = cart.map(i=>{
+    const p = PRODUCTS.find(x=>x.id===i.id);
+    if(!p) return '';
+    return `
+      <div class="cart-item">
+        <img src="${p.image}" alt="${p.title}" />
+        <div class="ci-info">
+          <b>${p.title}</b>
+          <span>${fmt(p.price)} × ${i.qty} = <b>${fmt(p.price*i.qty)}</b></span>
+        </div>
+        <div class="qty">
+          <button onclick="changeQty(${i.id},-1)">−</button>
+          <span>${i.qty}</span>
+          <button onclick="changeQty(${i.id},1)">+</button>
+        </div>
+        <button class="remove" onclick="removeItem(${i.id})">Удалить</button>
+      </div>
+    `;
+  }).join('');
+
+  foot.innerHTML = `
+    <div class="cart-total"><span>Итого</span><span>${fmt(cartTotal())}</span></div>
+    <button class="btn btn-dark" style="width:100%;padding:12px" onclick="startCheckout()">Оформить заявку</button>
+  `;
+}
+
+/* ОФОРМЛЕНИЕ */
+function startCheckout(){
+  if(!cart.length) return;
+  $('checkoutTotal').textContent = fmt(cartTotal());
+  closeModal('cartOverlay');
+  openModal('checkoutOverlay');
+}
+
+$('checkoutForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const form = e.target;
+  const order = {
+    date: new Date().toISOString(),
+    customer: {
+      name: form.name.value.trim(),
+      phone: form.phone.value.trim(),
+      email: form.email.value.trim(),
+      address: form.address.value.trim(),
+      comment: form.comment.value.trim(),
+    },
+    items: cart.map(i=>{
+      const p = PRODUCTS.find(x=>x.id===i.id);
+      return { id:i.id, title:p?.title, price:p?.price, qty:i.qty };
+    }),
+    total: cartTotal(),
+  };
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  orders.push(order);
+  localStorage.setItem('orders', JSON.stringify(orders));
+  console.log('Новый заказ:', order);
+
+  cart = [];
+  saveCart(); renderCart();
+  form.reset();
+  closeModal('checkoutOverlay');
+  showToast(`Заявка №${orders.length} отправлена`, true);
+});
+
+/* МОДАЛКИ */
+function openModal(id){ $(id).classList.add('show'); document.body.style.overflow='hidden'; }
+function closeModal(id){ $(id).classList.remove('show'); document.body.style.overflow=''; }
+
+document.querySelectorAll('.overlay').forEach(ov=>{
+  ov.addEventListener('click', e=>{
+    if(e.target === ov){ ov.classList.remove('show'); document.body.style.overflow=''; }
+  });
+});
+document.querySelectorAll('[data-close]').forEach(btn=>{
+  btn.onclick = ()=> closeModal(btn.dataset.close);
+});
+$('openCart').onclick = ()=>{ renderCart(); openModal('cartOverlay'); };
+
+/* ПОИСК */
+$('searchInput').addEventListener('input', e=>{
+  searchQuery = e.target.value.trim().toLowerCase();
+  renderGrid();
+});
+
+/* КАЛЬКУЛЯТОР */
+function initCalc(){
+  const sel = $('calcProduct');
+  sel.innerHTML = PRODUCTS.map(p =>
+    `<option value="${p.id}">${p.title} — ${fmt(p.rent)}/сутки</option>`
+  ).join('');
+  sel.onchange = renderCalc;
+  $('calcQty').oninput = renderCalc;
+  $('calcDays').oninput = renderCalc;
+  $('calcDelivery').onchange = renderCalc;
+  $('calcWhatsApp').onclick = sendCalcToWhatsApp;
+  renderCalc();
+}
+
+function getCalc(){
+  const p = PRODUCTS.find(x=>x.id == $('calcProduct').value) || PRODUCTS[0];
+  let qty = parseInt($('calcQty').value, 10); if(!qty || qty < 1) qty = 1;
+  let days = parseInt($('calcDays').value, 10); if(!days || days < 1) days = 1;
+  const delivery = parseInt($('calcDelivery').value, 10) || 0;
+  const base = p.rent * qty * days;
+  let discountPct = 0;
+  if(days >= 8) discountPct = 15;
+  else if(days >= 4) discountPct = 10;
+  const discount = Math.round(base * discountPct / 100);
+  const total = base - discount + delivery;
+  return { p, qty, days, delivery, base, discountPct, discount, total };
+}
+
+function renderCalc(){
+  const c = getCalc();
+  $('calcResult').innerHTML = `
+    <div class="calc-row"><span>${c.p.title} × ${c.qty} × ${c.days} сут.</span><span>${fmt(c.base)}</span></div>
+    ${c.discount ? `<div class="calc-row discount"><span>Скидка за срок (${c.discountPct}%)</span><span>−${fmt(c.discount)}</span></div>` : ''}
+    <div class="calc-row"><span>Доставка</span><span>${c.delivery ? fmt(c.delivery) : 'самовывоз'}</span></div>
+    <div class="calc-row total"><span>Итого</span><span>${fmt(c.total)}</span></div>
+  `;
+}
+
+function sendCalcToWhatsApp(){
+  const c = getCalc();
+  const text =
+    'Здравствуйте! Расчёт аренды с сайта:\n' +
+    `Оборудование: ${c.p.title}\n` +
+    `Количество: ${c.qty}\n` +
+    `Срок: ${c.days} сут.\n` +
+    `Доставка: ${c.delivery ? 'по Уфе, ' + fmt(c.delivery) : 'самовывоз'}\n` +
+    (c.discount ? `Скидка: ${c.discountPct}% (−${fmt(c.discount)})\n` : '') +
+    `Итого: ${fmt(c.total)}`;
+  window.open('https://wa.me/79046669413?text=' + encodeURIComponent(text), '_blank');
+}
+
+/* TOAST */
+let toastTimer;
+function showToast(text, ok=false){
+  const t = $('toast');
+  t.textContent = text;
+  t.className = 'toast show' + (ok ? ' ok' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2400);
+}
+
+/* ИНИТ */
+renderFilters();
+renderGrid();
+renderReviews();
+renderCart();
+initCalc();
+</script>
+</body>
+</html>
